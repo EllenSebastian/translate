@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.snowball import FrenchStemmer
@@ -12,18 +13,18 @@ class DirectTranslate:
   """
 
   def __init__(self, translation_dict, lemmatized=False):
+    self.english_lemmatizer = WordNetLemmatizer()
+    self.french_stemmer = FrenchStemmer()
     if not lemmatized:
       translation_dict = self._get_lemmatized_dict(translation_dict)
     self.translation_dict = translation_dict
     
   def _get_lemmatized_dict(self, dict):
-    english_lemmatizer = WordNetLemmatizer()
-    french_stemmer = FrenchStemmer()
     result = {}
     for french_word, english_translation_list in dict.iteritems():
-      french_stem = french_stemmer.stem(french_word)
+      french_stem = self.french_stemmer.stem(french_word)
       english_translations = [
-        english_lemmatizer.stem(word) for word in english_translation_list
+        self.english_lemmatizer.lemmatize(word) for word in english_translation_list
       ]
       # NOTE: This may or may not be the best stragetgy.  If two distinct
       # French words in the initial dict have the same stem,
@@ -40,12 +41,15 @@ class DirectTranslate:
     tokens = self._get_list_of_words(sentence, delims, remove)
     translated_list = []
     for token in tokens:
+      token = self.french_stemmer.stem(token).lower()
       if token in self.translation_dict:
         possible_translations = self.translation_dict[token]
         if possible_translations:
           # Use first translation in the list
           translation = possible_translations[0]
           translated_list.append(translation)
+      else:
+        print 'MISSING WORD:', token
     return ' '.join(translated_list)
     
   def _get_list_of_words(self, sentence, delims, remove):
@@ -87,17 +91,42 @@ class DirectTranslate:
 
 
 test_dict = {
-  'a': ['1', 'dsfsfd'],
-  'b': ['2', 'lakjdf'],
-  'c': ['3', 'asdfsd'],
-  'none': None,
+	u"ce": ["this", "it", "that"],
+	u"n'est": ["is"],
+	u"qu'une": ["a"],
+	u"partie": ["part", "portion", "party", "section", "match", "round", "proportion", "stroke", "slice", "stretch", "game", "parcel", "hand"],
+	u"de": ["of", "to", "from", "by", "out of", "off", "at", "with", "than"],
+	u"la": ["the", "her", "it", "lah", "la", "A"],
+	u"contribution": ["contribution", "donation", "input"],
+	u"l'UE": ["EU"],
+	u"et": ["and"],
+	u"cette": ["this", "that"],
+	u"doit": ["must"],
+	u"être": ["be", "exist"],
+	u"en": ["in", "into", "to", "at", "during", "of", "thereof"],
+	u"cohérence": ["consistency"],
+	u"avec": ["with", "to", "along with", "together with", "along"],
+	u"réaction": ["reaction", "response", "feedback"],
+	u"internationale": ["international"],
+	u"coordonnée": ["coordinate"],
+	u"Monsieur": ["Mr.", "sir", "monsieur", "mister", "gent", "master"],
+	u"le": ["the", "it", "him"],
+	u"Président": ["president", "chief executive", "chairman", "chancellor", "chief", "foreman", "moderator"],
+	u"merci": ["thank you", "thank"],
+	u"beaucoup": ["many", "much", "a lot", "far", "plenty", "so much", "widely", "a great many", "a great deal"],
+	u"votre": ["your"],
+	u"compréhension": ["comprehension", "connotation", "grasp", "hold", "ken"]
 }
 
+test_inputs = [
+ u"Ce n'est qu'une partie de la contribution de l'UE, et cette contribution doit être en cohérence avec la réaction internationale coordonnée.",
+ u"Monsieur le Président, merci beaucoup de votre compréhension."
+]
 # Test it out    
 def main():
-  input = 'a b\'c none, b'
-  translator = DirectTranslate(test_dict, lemmatized=True)
-  print translator.translate(input)
+  translator = DirectTranslate(test_dict, lemmatized=False)
+  for input in test_inputs:
+    print translator.translate(input)
 
 if __name__ == '__main__':
   main()
