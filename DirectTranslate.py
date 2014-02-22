@@ -11,7 +11,6 @@ class DirectTranslate:
   for sentence in file:
     print translator.translate(sentence, delims=",' ", remove='')
   """
-
   def __init__(self, translation_dict, lemmatized=False):
     self.english_lemmatizer = WordNetLemmatizer()
     self.french_stemmer = FrenchStemmer()
@@ -126,7 +125,7 @@ test_inputs = [
 def main():
   translator = DirectTranslate(test_dict, lemmatized=False)
   for input in test_inputs:
-    print translator.translate(input)
+    print translator.translate(input, remove='.,')
 
 if __name__ == '__main__':
   main()
