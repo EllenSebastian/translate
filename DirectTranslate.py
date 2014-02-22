@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.stem.snowball import FrenchStemmer
 
 class DirectTranslate:
   """Word-by-word direct translator.
@@ -9,8 +11,30 @@ class DirectTranslate:
     print translator.translate(sentence, delims=",' ", remove='')
   """
 
-  def __init__(self, translation_dict):
+  def __init__(self, translation_dict, lemmatized=False):
+    if not lemmatized:
+      translation_dict = self._get_lemmatized_dict(translation_dict)
     self.translation_dict = translation_dict
+    
+  def _get_lemmatized_dict(self, dict):
+    english_lemmatizer = WordNetLemmatizer()
+    french_stemmer = FrenchStemmer()
+    result = {}
+    for french_word, english_translation_list in dict.iteritems():
+      french_stem = french_stemmer.stem(french_word)
+      english_translations = [
+        english_lemmatizer.stem(word) for word in english_translation_list
+      ]
+      # NOTE: This may or may not be the best stragetgy.  If two distinct
+      # French words in the initial dict have the same stem,
+      # it appends the two lists of translations.
+      # TODO: Reconsider.
+      # TODO: Consider removing duplicates from this new list.  But need to preserve order.
+      if french_stem not in result:
+        result[french_stem] = english_translations
+      else:
+        result[french_stem].extend(english_translations)
+    return result
     
   def translate(self, sentence, delims=",' ", remove=''):
     tokens = self._get_list_of_words(sentence, delims, remove)
@@ -72,7 +96,7 @@ test_dict = {
 # Test it out    
 def main():
   input = 'a b\'c none, b'
-  translator = DirectTranslate(test_dict)
+  translator = DirectTranslate(test_dict, lemmatized=True)
   print translator.translate(input)
 
 if __name__ == '__main__':
