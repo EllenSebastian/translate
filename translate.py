@@ -23,16 +23,13 @@ articles = ["a","the","an",]
 sentence1 = "this part of the contribution of and this contribution must be in consistency with the reaction international coordinate"
 sentence2 = "Mr. the president thank you many of your comprehension"
 adjSentence = "The cat fourth is sleeping"
-titles = ["Mr.","Mrs.","Miss", "President"]
+titles = ["Monsieur","Madame","Mademoiselle"]
 
 def estimator(fdist,bins):
     # from http://nltk.googlecode.com/svn-/trunk/doc/api/nltk.model.ngram-pysrc.html
     return nltk.probability.SimpleGoodTuringProbDist(fdist) 
 
-# replace with better lm
-trigramLM = NgramModel(3, brown.words(categories='news'), True,False,estimator)
-bigramLM = NgramModel(2, brown.words(categories='news'), True,False,estimator)
-unigramLM = NgramModel(1, brown.words(categories='news'), True,False,estimator)
+languageModel = NgramModel(3, brown.words(categories='news'), True,False,estimator)
 
 # return a list of tupules of words and part of speech tags
 # argument sentence is a STRING.
@@ -45,21 +42,10 @@ def estimator(fdist,bins):
 	# from http://nltk.googlecode.com/svn-/trunk/doc/api/nltk.model.ngram-pysrc.html
 	return SimpleGoodTuringProbDist(fdist) 
 
-def get_best_translation(possible_translations,translated_list):
-	return possible_translations[0]
-	if len(translated_list) == 0:
-		print 0 
-		# use unigram 
-		# return most likely translation
-	elif len(translated_list) == 1:
-		print 1
-		# use bigram
-		# return most likely translation
-	else:
-		print 2
-		# use trigram
-		# return most likely translation
-
+def correct_with_LM(sentence,frenchSentence):
+	#pdb.set_trace()
+	pdb.set_trace()
+	return sentence
 
 # if adjectives are in the wrong order, correct them. 
 # argument sentence is a STRING. 
@@ -82,23 +68,17 @@ def removeArticles(sentence):
 	# change "system of networking" to "networking system" , "market of capital" to "capital market" 
 	# NOUN of NOUN (sometimes) 
 	# change "of vERB" to "to verb"
-	# get rid of WHOSE a 
 	sentence = sentence.split(" ")
-	pdb.set_trace()
+
 	for i in range(0,len(sentence)-2):
 		if (i < len(sentence) -2 and postagged[i][1] in nounTags and sentence[i+1] == "of" and postagged[i+2][1] in adjTags):
-			print "    switching " + ' '.join(sentence[i:i+3]) + " ->  " + sentence[i+2] + " " + sentence[i]
+			
 			sentence[i+1] = sentence[i]
 			sentence[i] = sentence[i+2]
 			sentence[i+2] = ""
-		if ("DT" in postagged[i][1] and (sentence[i+1] == "the")):
-			print "     switching " + ' '.join(sentence[i:i+3]) + " -> " + sentence[i] + " " + sentence[i+2]
-			sentence[i+1] = "" 
-		if (sentence[i] == "of" and postagged[i+1][1] in verbTags + adjTags):
-			print "     switching  of " + sentence[i+1] + " --> to " + sentence[i+1]
+		if (sentence[i] == "of" and postagged[i+1][1] in verbTags):
+			pdb.set_trace()
 			sentence[i] = "to"
-		if (sentence[i] in titles and sentence[i+1] == "the"):
-			sentence[i+1] = ""
 	return string.join(sentence)
 #print POStag(sentence1)
 #switchAdjectives(adjSentence)
