@@ -38,7 +38,8 @@ class DirectTranslate:
       else:
         result[french_stem].extend(english_translations)
     return result
-    
+  
+  # TODO: Add code to keep commas.  Translate them into a word.
   def translate(self, sentence, delims=",' ", remove=''):
     tokens = self._get_list_of_words(sentence, delims, remove)
     translated_list = []
@@ -56,6 +57,7 @@ class DirectTranslate:
           # Use first translation in the list
           translation = possible_translations[0]
           translated_list.append(translation)
+    print sentence
     return ' '.join(translated_list)
     
   def _get_list_of_words(self, sentence, delims, remove):
