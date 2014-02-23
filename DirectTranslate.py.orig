@@ -21,7 +21,8 @@ class DirectTranslate:
       stemmed_dict = self._get_lemmatized_dict(translation_dict)
     self.stemmed_dict = stemmed_dict
     self.translation_dict = translation_dict
-    
+    # what else to train on?
+
   def _get_lemmatized_dict(self, dict):
     result = {}
     for french_word, english_translation_list in dict.iteritems():
@@ -58,10 +59,15 @@ class DirectTranslate:
           # Use first translation in the list
           translation = possible_translations[0]
           translated_list.append(translation)
+<<<<<<< HEAD
     translated_list = correct_with_LM(' '.join(translated_list),sentence)
     translated_list= switchAdjectives(translated_list,sentence)
     translated_list= removeArticles(translated_list)
     return translated_list
+=======
+    print sentence
+    return ' '.join(translated_list)
+>>>>>>> 94c9868a3be2494ac2df60d60b0550aded8905f8
     
   def _get_list_of_words(self, sentence, delims, remove):
     """Gets the sentence as a list of words, split at
