@@ -72,6 +72,7 @@ class DirectTranslate:
     Returns:
       The sentence with all preprocessing rules applied.
     """
+    french_sentence = unicode(french_sentence)
     french_sentence = remove_double_negative(french_sentence)
     french_sentence = changeParceQue(french_sentence)
     return french_sentence

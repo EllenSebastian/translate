@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def get_list_of_words(sentence, delims=",' ", remove=''):
   """Gets the sentence as a list of words, split at
     delims and with the characters in remove removed.
@@ -33,5 +34,5 @@ def _strip_chars(word, chars_to_remove):
      every char in the list removed.
   """
   for char in chars_to_remove:
-    word = word.replace(char, '')
+    word = word.replace(char, u'')
   return word
