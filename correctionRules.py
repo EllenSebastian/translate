@@ -13,6 +13,7 @@ import re
 from nltk import NgramModel
 from nltk.probability import (ConditionalProbDist, ConditionalFreqDist, MLEProbDist, SimpleGoodTuringProbDist) 
 from nltk.corpus import brown
+import TranslateUtils
 
 
 preNounAdjectives = ["beau","beaux","belle","belles","bel","laid","laids","laide","laides",
@@ -102,3 +103,27 @@ def removeArticles(sentence):
 	return string.join(sentence)
 #print POStag(sentence1)
 #switchAdjectives(adjSentence)
+
+def _token_is_negative_prefix(token):
+  return token == 'ne' or token == 'n' or token == "n'"
+
+def remove_double_negative(french_sentence):
+  """In french, there are TWO negative words in a negative sentence.
+  for example, 'je NE peux PAS'.  Both of those will translate to
+  'not', changing te meaning of the sentence in direct translation.
+  This function remove the 'NE' or 'n' to prevent this.
+  """
+  # TODO: Substantially messes up with 'envisagerait', because it's tranlation is two words.
+  # we should get 'would not consider'; we instead get 'would consider not'
+  tokens = TranslateUtils.get_list_of_words(french_sentence)
+  result_tokens = []
+  for i in xrange(len(tokens)):
+    token = tokens[i]
+    # If token is negative prefix and a token within three 3 spaces is
+    # 'pas', then we are confident that this should be removed.
+    if _token_is_negative_prefix(token) and 'pas' in tokens[i+1:i+6]:
+      continue
+    else:
+      result_tokens.append(token)
+  return ' '.join(result_tokens)
+

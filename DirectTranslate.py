@@ -4,6 +4,8 @@ from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.snowball import FrenchStemmer
 import codecs
 import sys
+import correctionRules
+import TranslateUtils
 
 class DirectTranslate:
   """Word-by-word direct translator.
@@ -38,10 +40,32 @@ class DirectTranslate:
       else:
         result[french_stem].extend(english_translations)
     return result
-  
+
+  def _get_preprocessed_sentence(self, french_sentence):
+    """Apply any preprossing rules here.
+    Args:
+      french_sentence: string; the sentence in french
+    
+    Returns:
+      The sentence with all preprocessing rules applied.
+    """
+    french_sentence = correctionRules.remove_double_negative(french_sentence)
+    return french_sentence
+
+  def _get_postprocessed_sentence(self, english_sentence):
+    """Apply any postproccessing rules here.
+    Args: 
+      english_sentence: string; an english sentence
+    
+    Returns:
+      The sentence with all postprocessing rules applied.
+    """
+    return english_sentence
+
   # TODO: Add code to keep commas.  Translate them into a word.
   def translate(self, sentence, delims=",' ", remove=''):
-    tokens = self._get_list_of_words(sentence, delims, remove)
+    sentence = self._get_preprocessed_sentence(sentence)
+    tokens = TranslateUtils.get_list_of_words(sentence, delims, remove)
     translated_list = []
     for token in tokens:
       stemmed_token = self.french_stemmer.stem(token).lower()
@@ -57,45 +81,9 @@ class DirectTranslate:
           # Use first translation in the list
           translation = possible_translations[0]
           translated_list.append(translation)
-    print sentence
-    return ' '.join(translated_list)
-    
-  def _get_list_of_words(self, sentence, delims, remove):
-    """Gets the sentence as a list of words, split at
-      delims and with the characters in remove removed.
-      
-      NOTE: Assumes one-char delims and one-char removes.
-    """
-    result = [sentence]
-    for delim in delims:
-      result = self._get_stripped_tokens(result, delim, remove)
-    return result
-        
-  def _get_stripped_tokens(self, strlist, delim, remove):
-    result = []
-    for str in strlist:
-      tokens = str.split(delim)
-      stripped_tokens = self._stripped_words(tokens, remove)
-      result.extend(stripped_tokens)
-    return result
-  
-  def _stripped_words(self, words, remove_chars):
-    """Given a list of words and a string of characters to remove,
-       returns the list of string with every one of the remove_chars
-       removed."""
-    result = []
-    for word in words:
-      word = self._strip_chars(word, remove_chars)
-      result.append(word)
-    return result
-    
-  def _strip_chars(self, word, chars_to_remove):
-    """Given a word and list of chars, returns the word with
-       every char in the list removed.
-    """
-    for char in chars_to_remove:
-      word = word.replace(char, '')
-    return word
+    translation = ' '.join(translated_list)
+    translation = self._get_postprocessed_sentence(translation)
+    return translation
 
 vocab = {
   u"ce": ["this", "it", "that"],
@@ -334,6 +322,7 @@ def main(args):
   translator = DirectTranslate(vocab, lemmatized=False)
   with codecs.open(args[0], 'r', 'utf-8') as f:
     for line in f:
+      print line
       print translator.translate(line, remove=u'.?!»«\n;')
       print
       print
