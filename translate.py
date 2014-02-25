@@ -7,6 +7,8 @@ import sys
 import re
 import pdb
 from correctionRules import * 
+import TranslateUtils
+
 class DirectTranslate:
   """Word-by-word direct translator.
   
@@ -41,6 +43,7 @@ class DirectTranslate:
         result[french_stem].extend(english_translations)
     return result
 
+  # TODO: Could this go in TranslationUtils?
   def _tokenize_punctuation(self,sentence):
   	sentence = re.sub(","," ,", sentence)
   	sentence = re.sub(";"," ;", sentence)
@@ -60,9 +63,22 @@ class DirectTranslate:
   	sentence = re.sub("[ ]+\.",".", sentence)
   	sentence = re.sub("[ ]+\"," ,"\"", sentence)
   	return sentence
+  	
+  def _get_preprocessed_sentence(self, french_sentence):
+    """Apply any preprossing rules here.
+    Args:
+      french_sentence: string; the sentence in french
+    
+    Returns:
+      The sentence with all preprocessing rules applied.
+    """
+    french_sentence = remove_double_negative(french_sentence)
+    french_sentence = changeParceQue(french_sentence)
+    return french_sentence
+
   # TODO: Add code to keep commas.  Translate them into a word.
   def translate(self, sentence, delims=" ", remove=''):
-    print sentence
+    sentence = self._get_preprocessed_sentence(sentence)
     sentence = self._tokenize_punctuation(sentence)
     tokens = self._get_list_of_words(sentence, delims, remove)
     translated_list = []
@@ -84,12 +100,28 @@ class DirectTranslate:
       	translated_list.append(token)
     translated_sentence = ' '.join(translated_list)
     translated_sentence = translated_sentence[0].upper() + translated_sentence[1:]
-    translated_sentence = switchAdjectives(translated_sentence,sentence)
-    translated_sentence = removeArticles(translated_sentence)
+    
+    translated_sentence = self._get_postprocessed_sentence(translated_sentence, sentence)
 
     translated_sentence = self._untokenize_punctuation(translated_sentence)
     return translated_sentence
     
+  def _get_postprocessed_sentence(self, english_sentence, french_sentence):
+    """Apply any postproccessing rules here.
+    Args: 
+      english_sentence: string; an english sentence
+    
+    Returns:
+      The sentence with all postprocessing rules applied.
+    """ 
+    result = deBetweenVerbs(english_sentence, french_sentence)
+    result = switchAdjectives(english_sentence, french_sentence)
+    result = removeArticles(result)
+    
+    # Remove any double spaces, make sure we call this last.
+    result = re.sub('  ', ' ', result)
+    return result
+  
   def _get_list_of_words(self, sentence, delims, remove):
     """Gets the sentence as a list of words, split at
       delims and with the characters in remove removed.
@@ -128,13 +160,14 @@ class DirectTranslate:
     return word
 
 vocab = {
+  # Punctuation
   u",":[","],
   u".":["."],
   u";":[","],
   u"?":["?"],
-
   u"«":["\""],
   u"»":["\""],
+  
   u"ce": ["this", "it", "that"],
   u"est": ["is"],
   u"une": ["a"],
@@ -165,7 +198,7 @@ vocab = {
   u"tout": ["all", "any", "every", "entire", "most important", "very", "in all", "all up", "whole", "anything"],
   u"un": ["a", "an", "one"],
   u"système": ["system", "method", "framework", "shape", "setup"],
-  u"d’organes": ["organ"],
+  u"d’organes": ["organs"],
   u"juridiques": ["legal", "juridicial", "jural", "statutory"],
   u"constitutionnels": ["constitutional"],
   u"dont": ["whose"],
@@ -371,6 +404,7 @@ def main(args):
   translator = DirectTranslate(vocab, lemmatized=False)
   with codecs.open(args[0], 'r', 'utf-8') as f:
     for line in f:
+      print line[:-1] # Remove newline
       print translator.translate(line, remove=u'\n')
       print
       print

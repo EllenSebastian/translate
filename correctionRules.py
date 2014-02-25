@@ -7,7 +7,8 @@ nounTags = ["NN","NNS"]
 verbTags = ["VB","VBD","VBG","VBN","VBP","VBZ"]
 
 import nltk
-import pdb
+#import pdb
+import math
 import string
 import re
 from nltk import NgramModel
@@ -93,18 +94,18 @@ def removeArticles(sentence):
 	# change "of vERB" to "to verb"
 	# get rid of WHOSE a 
 	sentence = sentence.split(" ")
-	pdb.set_trace()
+#	pdb.set_trace()
 	for i in range(0,len(sentence)-2):
 		if (i < len(sentence) -2 and postagged[i][1] in nounTags and sentence[i+1] == "of" and postagged[i+2][1] in adjTags):
-			print "    switching " + ' '.join(sentence[i:i+3]) + " ->  " + sentence[i+2] + " " + sentence[i]
+#			print "    switching " + ' '.join(sentence[i:i+3]) + " ->  " + sentence[i+2] + " " + sentence[i]
 			sentence[i+1] = sentence[i]
 			sentence[i] = sentence[i+2]
 			sentence[i+2] = ""
 		if ("DT" in postagged[i][1] and (sentence[i+1] == "the")):
-			print "     switching " + ' '.join(sentence[i:i+3]) + " -> " + sentence[i] + " " + sentence[i+2]
+#			print "     switching " + ' '.join(sentence[i:i+3]) + " -> " + sentence[i] + " " + sentence[i+2]
 			sentence[i+1] = "" 
 		if (sentence[i] == "of" and postagged[i+1][1] in verbTags + adjTags):
-			print "     switching  of " + sentence[i+1] + " --> to " + sentence[i+1]
+#			print "     switching  of " + sentence[i+1] + " --> to " + sentence[i+1]
 			sentence[i] = "to"
 		if (sentence[i] in titles and sentence[i+1] == "the"):
 			sentence[i+1] = ""

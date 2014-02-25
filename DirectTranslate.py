@@ -49,7 +49,6 @@ class DirectTranslate:
     Returns:
       The sentence with all preprocessing rules applied.
     """
-    french_sentence = correctionRules.remove_double_negative(french_sentence)
     return french_sentence
 
   def _get_postprocessed_sentence(self, english_sentence):
