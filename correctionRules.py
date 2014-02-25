@@ -11,7 +11,7 @@ import pdb
 import string
 import re
 from nltk import NgramModel
-from nltk.probability import (ConditionalProbDist, ConditionalFreqDist, MLEProbDist, SimpleGoodTuringProbDist) 
+from nltk.probability import (LaplaceProbDist, ConditionalProbDist, ConditionalFreqDist, MLEProbDist, SimpleGoodTuringProbDist) 
 from nltk.corpus import brown
 import TranslateUtils
 
@@ -26,11 +26,9 @@ sentence2 = "Mr. the president thank you many of your comprehension"
 adjSentence = "The cat fourth is sleeping"
 titles = ["Mr.","Mrs.","Miss", "President"]
 
-def estimator(fdist,bins):
-    # from http://nltk.googlecode.com/svn-/trunk/doc/api/nltk.model.ngram-pysrc.html
-    return nltk.probability.SimpleGoodTuringProbDist(fdist) 
 
-# replace with better lm
+estimator = lambda fdist, bins: LaplaceProbDist(fdist,max(1,fdist.B()))  # laplace smoothing
+
 trigramLM = NgramModel(3, brown.words(categories='news'), True,False,estimator)
 bigramLM = NgramModel(2, brown.words(categories='news'), True,False,estimator)
 unigramLM = NgramModel(1, brown.words(categories='news'), True,False,estimator)
@@ -42,24 +40,34 @@ def POStag (sentence):
 	return postagged
 
 
-def estimator(fdist,bins):
-	# from http://nltk.googlecode.com/svn-/trunk/doc/api/nltk.model.ngram-pysrc.html
-	return SimpleGoodTuringProbDist(fdist) 
 
+
+# return the best translation of possible_translations based on 
+# the position in the list combined with the laplace language-model probability of the word.
+# probability is determined by:
+#   P(word) = languageModelProbability/log(positionInList+2)
 def get_best_translation(possible_translations,translated_list):
-	return possible_translations[0]
-	if len(translated_list) == 0:
-		print 0 
-		# use unigram 
-		# return most likely translation
-	elif len(translated_list) == 1:
-		print 1
-		# use bigram
-		# return most likely translation
-	else:
-		print 2
-		# use trigram
-		# return most likely translation
+	translation_probs = []
+	if (len(possible_translations) == 1):
+		return possible_translations[0]
+	if (len(translated_list) == 0): # use unigram
+		for i in range(len(possible_translations)-1):
+			logFactor = math.log(i+2)
+			translation_probs.append(unigramLM.prob(possible_translations[i],translated_list) / logFactor)
+
+	elif (len(translated_list )== 1): # use bigram
+		for i in range(len(possible_translations)-1):
+			logFactor = math.log(i+2)
+			translation_probs.append(bigramLM.prob(possible_translations[i],translated_list) / logFactor)
+	else: #use trigram
+		for i in range(len(possible_translations)-1):#
+			logFactor = math.log(i+2)
+			translation_probs.append(trigramLM.prob(possible_translations[i],translated_list) / logFactor)
+
+	#if ( translation_probs.index(max(translation_probs)) != 0):
+	#	pdb.set_trace()
+	toReturn = possible_translations[translation_probs.index(max(translation_probs))]
+	return toReturn
 
 
 # if adjectives are in the wrong order, correct them. 
