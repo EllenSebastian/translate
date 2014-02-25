@@ -104,6 +104,24 @@ def removeArticles(sentence):
 #print POStag(sentence1)
 #switchAdjectives(adjSentence)
 
+#this method will actually have to check for verb phrases
+def deBetweenVerbs(sentence, frenchSentence):
+	frenchSentence = frenchSentence.split(" ")
+	postagged = POStag(sentence)
+	sentence = sentence.split(" ")
+	for i in range(0, len(sentence) - 3):
+		if (postagged[i][1] in verbTags and postagged[i + 1][0] == 'de' and postagged[i + 2][1] in verbTags):
+			sentence[i + 1] = "to";
+
+	return ' '.join(sentence)
+
+def changeParceQue(frenchSentence):
+	frenchSentence = frenchSentence.split(" ")
+	for i in range(0, len(frenchSentence) - 2):
+		if frenchSentence[i].lower() == "parce" and frenchSentence[i + 1] == 'que':
+			frenchSentence.pop(i + 1);
+	return ' '.join(frenchSentence)
+
 def _token_is_negative_prefix(token):
   return token == 'ne' or token == 'n' or token == "n'"
 
