@@ -321,7 +321,7 @@ def main(args):
   translator = DirectTranslate(vocab, lemmatized=False)
   with codecs.open(args[0], 'r', 'utf-8') as f:
     for line in f:
-      print line
+      print line[:-1] # Remove trailing \n
       print translator.translate(line, remove=u'.?!»«\n;')
       print
       print
