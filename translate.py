@@ -75,6 +75,8 @@ class DirectTranslate:
     french_sentence = unicode(french_sentence)
     french_sentence = remove_double_negative(french_sentence)
     french_sentence = changeParceQue(french_sentence)
+#    french_sentence = add_plural_tags(french_sentence)
+    print 'Pre:',french_sentence
     return french_sentence
 
   # TODO: Add code to keep commas.  Translate them into a word.
@@ -116,11 +118,13 @@ class DirectTranslate:
       The sentence with all postprocessing rules applied.
     """ 
     result = deBetweenVerbs(english_sentence, french_sentence)
-    result = switchAdjectives(english_sentence, french_sentence)
+    result = switchAdjectives(result, french_sentence)
     result = removeArticles(result)
     
+    result = make_plural_nouns(result)
     # Remove any double spaces, make sure we call this last.
     result = re.sub('  ', ' ', result)
+    print 'Post:', result
     return result
   
   def _get_list_of_words(self, sentence, delims, remove):
@@ -233,7 +237,7 @@ vocab = {
   u"est": ["is", "east", "eastern"],
   u"diabétique": ["diabetic"],
   u"tous": ["all", "every", "everything"],
-  u"les": ["the", "them"],
+  u"les": ["<PLURAL>the</PLURAL>", "<PLURAL>them</PLURAL>"],
   u"européen": ["European"],
   u"doivent-ils": ["must they", "should they"],
   u"cesser": ["stop", "cease", "discontinue", "leave off", "come off", "desist"],
@@ -245,7 +249,7 @@ vocab = {
   u"une": ["a", "an", "one"],
   u"fois": ["times", "time"],
   u"plus": ["more", "most", "further", "any", "plus"],
-  u"aux": ["to"],
+  u"aux": ["<PLURAL>to</PLURAL>"],
   u"député": ["deputy", "member of parliament", "congressman", "representative", "burgess", "delegate"],
   u"parlement": ["parliament", "house"],
   u"lorsqu": ["when"],
@@ -260,10 +264,10 @@ vocab = {
   u"Assemblée": ["assembly"],
   u"à": ["to", "in", "at", "with", "upon", "by"],
   u"régir": ["govern", "administer", "steward"],
-  u"ses": ["its", "his", "her"],
+  u"ses": ["<PLURAL>its</PLURAL>", "<PLURAL>his</PLURAL>", "<PLURAL>her</PLURAL>"],
   u"propres": ["own", "clean", "fair", "cleanly", "neat", "immaculate", "tidy", "proper", "taut", "potty-trained"],
   u"affaires": ["business", "affairs", "things", "stuff", "trading", "clothes", "belongings", "transaction", "traps", "gear", "commerce", "kit"],
-  u"ces": ["these", "this", "that"],
+  u"ces": ["<PLURAL>these</PLURAL>", "<PLURAL>this</PLURAL>", "<PLURAL>that</PLURAL>"],
   u"auditions": ["hearings"],
   u"ont": ["have", "get", "own", "possess", "stock", "hold"],
   u"réussite": ["success", "achievement", "patience", "go"],
@@ -330,7 +334,7 @@ vocab = {
   u"l": ["the"],
   u"ailleurs": ["somewhere else"],
   u"cours": ["course", "price", "path", "run", "race", "rate", "lecture", "lesson", "school", "session", "period", "tenor", "tide", "quotation", "tuition"],
-  u"des": ["of"],
+  u"des": ["<PLURAL>of</PLURAL>"],
   u"deux": ["two", "deuce"],
   u"prochain": ["next", "upcoming", "forthcoming"],
   u"décennie": ["decade", "decennary", "decennium"],

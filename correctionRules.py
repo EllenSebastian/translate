@@ -49,26 +49,46 @@ def POStag (sentence):
 #   P(word) = languageModelProbability/log(positionInList+2)
 def get_best_translation(possible_translations,translated_list):
 	translation_probs = []
+	translation_list = _get_translated_list_without_plural_tags(translated_list)
 	if (len(possible_translations) == 1):
 		return possible_translations[0]
 	if (len(translated_list) == 0): # use unigram
 		for i in range(len(possible_translations)-1):
 			logFactor = math.log(i+2)
-			translation_probs.append(unigramLM.prob(possible_translations[i],translated_list) / logFactor)
+			possible_translation = possible_translations[i]
+			if _is_plural_token(possible_translation):
+			  possible_translation = _extract_word_from_plural_token(possible_translation)
+			translation_probs.append(unigramLM.prob(possible_translation,translated_list) / logFactor)
 
 	elif (len(translated_list )== 1): # use bigram
 		for i in range(len(possible_translations)-1):
 			logFactor = math.log(i+2)
-			translation_probs.append(bigramLM.prob(possible_translations[i],translated_list) / logFactor)
+			possible_translation = possible_translations[i]
+			if _is_plural_token(possible_translation):
+			  possible_translation = _extract_word_from_plural_token(possible_translation)
+			translation_probs.append(bigramLM.prob(possible_translation,translated_list) / logFactor)
 	else: #use trigram
 		for i in range(len(possible_translations)-1):#
+			possible_translation = possible_translations[i]
+			if _is_plural_token(possible_translation):
+			  print possible_translation
+			  possible_translation = _extract_word_from_plural_token(possible_translation)
+			  print possible_translation
 			logFactor = math.log(i+2)
-			translation_probs.append(trigramLM.prob(possible_translations[i],translated_list) / logFactor)
+			translation_probs.append(trigramLM.prob(possible_translation,translated_list) / logFactor)
 
 	#if ( translation_probs.index(max(translation_probs)) != 0):
 	#	pdb.set_trace()
 	toReturn = possible_translations[translation_probs.index(max(translation_probs))]
 	return toReturn
+
+def _get_translated_list_without_plural_tags(original_list):
+  result = []
+  for item in original_list:
+    if _is_plural_token(item):
+      item = _extract_word_from_plural_token(item)
+    result.append(item)
+  return result
 
 # if adjectives are in the wrong order, correct them. 
 # argument sentence is a STRING. 
@@ -153,3 +173,34 @@ def remove_double_negative(french_sentence):
       result_tokens.append(token)
   return ' '.join(result_tokens)
 
+def add_plural_tags(french_sentence):
+  tokens = french_sentence.split(' ')
+  result_tokens = []
+  for token in tokens:
+    if token in PLURAL_FRENCH_ARTICLES:
+      result_tokens.append('<PLURAL>%s</PLURAL>' % token)
+    else:
+      result_tokens.append(token)
+  return ' '.join(result_tokens)
+
+def make_plural_nouns(english_sentence):
+  tokens_tags = POStag(english_sentence)
+  result_tokens = []
+  make_plural = False
+  for token, tag in tokens_tags:
+    if make_plural and tag in nounTags:
+      #TODO: find more sophisticated pluralizing algorithm
+      token = '%ss' % token
+      make_plural = False
+    elif _is_plural_token(token):
+      make_plural = True
+      token = _extract_word_from_plural_token(token)
+    result_tokens.append(token)
+  return ' '.join(result_tokens)
+
+def _is_plural_token(token):
+  return token.startswith('<PLURAL>') and token.endswith('</PLURAL>')
+  
+def _extract_word_from_plural_token(token):
+  remove = len('<PLURAL>')
+  return token[remove:-(remove + 1)]
