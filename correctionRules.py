@@ -176,7 +176,6 @@ def remove_double_negative(french_sentence):
 def _list_intersect(list1, list2):
   return set(list1) & set(list2)
 
-
 def add_plural_tags(french_sentence):
   tokens = french_sentence.split(' ')
   result_tokens = []
