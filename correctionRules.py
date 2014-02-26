@@ -70,7 +70,6 @@ def get_best_translation(possible_translations,translated_list):
 	toReturn = possible_translations[translation_probs.index(max(translation_probs))]
 	return toReturn
 
-
 # if adjectives are in the wrong order, correct them. 
 # argument sentence is a STRING. 
 def switchAdjectives (sentence,frenchSentence):
