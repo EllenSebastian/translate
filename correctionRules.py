@@ -71,9 +71,7 @@ def get_best_translation(possible_translations,translated_list):
 		for i in range(len(possible_translations)-1):#
 			possible_translation = possible_translations[i]
 			if _is_plural_token(possible_translation):
-			  print possible_translation
 			  possible_translation = _extract_word_from_plural_token(possible_translation)
-			  print possible_translation
 			logFactor = math.log(i+2)
 			translation_probs.append(trigramLM.prob(possible_translation,translated_list) / logFactor)
 

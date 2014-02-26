@@ -76,7 +76,7 @@ class DirectTranslate:
     french_sentence = remove_double_negative(french_sentence)
     french_sentence = changeParceQue(french_sentence)
 #    french_sentence = add_plural_tags(french_sentence)
-    print 'Pre:',french_sentence
+#    print 'Pre:',french_sentence
     return french_sentence
 
   # TODO: Add code to keep commas.  Translate them into a word.
@@ -124,7 +124,7 @@ class DirectTranslate:
     result = make_plural_nouns(result)
     # Remove any double spaces, make sure we call this last.
     result = re.sub('  ', ' ', result)
-    print 'Post:', result
+#    print 'Post:', result
     return result
   
   def _get_list_of_words(self, sentence, delims, remove):
