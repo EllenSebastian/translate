@@ -6,6 +6,8 @@ adjTags = ["JJ","JJS","JJR"]
 nounTags = ["NN","NNS"]
 verbTags = ["VB","VBD","VBG","VBN","VBP","VBZ"]
 
+negatives = ['pas', 'jamais', 'nul', 'aucune', 'aucun', 'rien', 'rienne', 'personne']
+
 import nltk
 #import pdb
 import math
@@ -165,11 +167,15 @@ def remove_double_negative(french_sentence):
     token = tokens[i]
     # If token is negative prefix and a token within three 3 spaces is
     # 'pas', then we are confident that this should be removed.
-    if _token_is_negative_prefix(token) and 'pas' in tokens[i+1:i+6]:
+    if _token_is_negative_prefix(token) and _list_intersect(negatives,tokens[i+1:i+6]):
       continue
     else:
       result_tokens.append(token)
   return ' '.join(result_tokens)
+
+def _list_intersect(list1, list2):
+  return set(list1) & set(list2)
+
 
 def add_plural_tags(french_sentence):
   tokens = french_sentence.split(' ')

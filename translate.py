@@ -401,7 +401,7 @@ vocab = {
   u'surestimer': ['overestimate', 'overvalue'],
   u'importance': ['importance', 'significance', 'weight', 'prominence', 'worth', 'account', 'prominency', 'pith', 'standing', 'matter', 'largeness'], # TRUNCATED DUE TO NUMBER OF TRANSLATIONS
   u'marché': ['market', 'market place', 'mart', 'emporium', 'bargain'],
-  u'capitaux': ['capital', 'fund']
+  u'capitaux': ['capital', 'fund'],
 }
 
 # Test it out    
