@@ -215,7 +215,7 @@ def make_plural_nouns(english_sentence):
   for token, tag in tokens_tags:
     if make_plural and tag in nounTags:
       #TODO: find more sophisticated pluralizing algorithm
-      token = '%ss' % token
+      token = _get_plural(token)
       make_plural = False
     elif _is_plural_token(token):
       make_plural = True
@@ -225,6 +225,12 @@ def make_plural_nouns(english_sentence):
 
 def _is_plural_token(token):
   return token.startswith('<PLURAL>') and token.endswith('</PLURAL>')
+  
+def _get_plural(token):
+  if token[-1] == 'y':
+    return token[:-1] + 'ies'
+  else:
+    return token + 's'
   
 def _extract_word_from_plural_token(token):
   remove = len('<PLURAL>')
