@@ -117,11 +117,11 @@ class DirectTranslate:
     Returns:
       The sentence with all postprocessing rules applied.
     """ 
-    result = deBetweenVerbs(english_sentence, french_sentence)
+    # result = deBetweenVerbs(english_sentence, french_sentence)
     result = switchAdjectives(result, french_sentence)
-    result = removeArticles(result)
-    
     result = make_plural_nouns(result)
+    result = removeArticles(result)
+
     # Remove any double spaces, make sure we call this last.
     result = re.sub('  ', ' ', result)
     return result

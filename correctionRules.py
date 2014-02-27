@@ -125,32 +125,33 @@ def removeArticles(sentence):
 	postagged = POStag(sentence)
 	sentence = re.sub("all of","all",sentence)
 	sentence = _get_translated_list_without_plural_tags(sentence.split(' '))
-
+	# printStuff = True
 	for i in range(0,len(sentence)-2):
 		if ("DT" in postagged[i][1] and (sentence[i+1] == "the")):
-			if (printStuff): 
-				print "REMOVE ARTICLE:    switching " + ' '.join(sentence[i:i+3]) + " -> " + sentence[i] + " " + sentence[i+2]
+			# if (printStuff):
+				# print "REMOVE ARTICLE:    switching " + ' '.join(sentence[i:i+3]) + " -> " + sentence[i] + " " + sentence[i+2]
 			sentence[i+1] = "" 
 		if (sentence[i] in titles and sentence[i+1] == "the" or sentence[i+1] == "<PLURAL>the</PLURAL>"):
-			if (printStuff):
-				print " REMOVE ARTICLE:  title  "
+			# if (printStuff):
+				# print " REMOVE ARTICLE:  title  "
 			sentence[i+1] = ""
 		if (sentence[i] == "that" and sentence[i+1] == "the"):
 			sentence[i+1] = ""
-			if (printStuff):	
-				print " REMOVE ARTICLE:  " + sentence[i-1] + sentence[i] + sentence[i+1]
+			# if (printStuff):
+				# print " REMOVE ARTICLE:  " + sentence[i-1] + sentence[i] + sentence[i+1]
 	return string.join(sentence)
 #print POStag(sentence1)
 #switchAdjectives(adjSentence)
-def deBetweenVerbs(sentence, frenchSentence):
-	frenchSentence = frenchSentence.split(" ")
-	postagged = POStag(sentence)
-	sentence = sentence.split(" ")
-	for i in range(0, len(sentence) - 3):
-		if (postagged[i][1] in verbTags and postagged[i + 1][0] == 'de' and postagged[i + 2][1] in verbTags):
-			sentence[i + 1] = "to";
+#this method will actually have to check for verb phrases
+# def deBetweenVerbs(sentence, frenchSentence):
+# 	frenchSentence = frenchSentence.split(" ")
+# 	postagged = POStag(sentence)
+# 	sentence = sentence.split(" ")
+# 	for i in range(0, len(sentence) - 3):
+# 		if (postagged[i][1] in verbTags and frenchSentece[i + 1] == 'de' and postagged[i + 2][1] in verbTags):
+# 			sentence[i + 1] = "to";
 
-	return ' '.join(sentence)
+# 	return ' '.join(sentence)
 
 
 #this method will actually have to check for verb phrases
