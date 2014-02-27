@@ -198,16 +198,6 @@ def remove_double_negative(french_sentence):
 def _list_intersect(list1, list2):
   return set(list1) & set(list2)
 
-def add_plural_tags(french_sentence):
-  tokens = french_sentence.split(' ')
-  result_tokens = []
-  for token in tokens:
-    if token in PLURAL_FRENCH_ARTICLES:
-      result_tokens.append('<PLURAL>%s</PLURAL>' % token)
-    else:
-      result_tokens.append(token)
-  return ' '.join(result_tokens)
-
 def make_plural_nouns(english_sentence):
   tokens_tags = POStag(english_sentence)
   result_tokens = []
