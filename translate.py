@@ -118,7 +118,7 @@ class DirectTranslate:
       The sentence with all postprocessing rules applied.
     """ 
     # result = deBetweenVerbs(english_sentence, french_sentence)
-    result = switchAdjectives(result, french_sentence)
+    result = switchAdjectives(english_sentence, french_sentence)
     result = make_plural_nouns(result)
     result = removeArticles(result)
 
