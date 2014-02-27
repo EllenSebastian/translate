@@ -20,7 +20,7 @@ class DirectTranslate:
   """
   def __init__(self, translation_dict, lemmatized=False):
     self.english_lemmatizer = WordNetLemmatizer()
-    self.french_stemmer = FrenchStemmer()
+    #self.french_stemmer = FrenchStemmer()
     if not lemmatized:
       stemmed_dict = self._get_lemmatized_dict(translation_dict)
     self.stemmed_dict = stemmed_dict
@@ -29,7 +29,7 @@ class DirectTranslate:
   def _get_lemmatized_dict(self, dict):
     result = {}
     for french_word, english_translation_list in dict.iteritems():
-      french_stem = self.french_stemmer.stem(french_word)
+      french_stem = french_word #self.french_stemmer.stem(french_word)
       english_translations = [
         self.english_lemmatizer.lemmatize(word) for word in english_translation_list
       ]
@@ -87,7 +87,7 @@ class DirectTranslate:
     tokens = self._get_list_of_words(sentence, delims, remove)
     translated_list = []
     for token in tokens:
-      stemmed_token = self.french_stemmer.stem(token).lower()
+      stemmed_token = token.lower()#self.french_stemmer.stem(token).lower()
       if stemmed_token in self.stemmed_dict:
         possible_translations = self.stemmed_dict[stemmed_token]
         if possible_translations:

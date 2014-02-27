@@ -213,7 +213,7 @@ def make_plural_nouns(english_sentence):
   result_tokens = []
   make_plural = False
   for token, tag in tokens_tags:
-    if make_plural and tag in nounTags:
+    if make_plural and tag in nounTags and not _is_plural_token(token):
       #TODO: find more sophisticated pluralizing algorithm
       token = _get_plural(token)
       make_plural = False
@@ -233,5 +233,9 @@ def _get_plural(token):
     return token + 's'
   
 def _extract_word_from_plural_token(token):
+  if '<PLURAL>' not in token:
+    raise Exception('Trying to extract <PLURAL> from token without it')
+  if '</PLURAL>' not in token:
+    raise Exception('Trying to extract </PLURAL> from token without it')
   remove = len('<PLURAL>')
   return token[remove:-(remove + 1)]
