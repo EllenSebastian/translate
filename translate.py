@@ -124,7 +124,6 @@ class DirectTranslate:
     result = make_plural_nouns(result)
     # Remove any double spaces, make sure we call this last.
     result = re.sub('  ', ' ', result)
-#    print 'Post:', result
     return result
   
   def _get_list_of_words(self, sentence, delims, remove):
