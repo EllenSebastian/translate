@@ -23,10 +23,6 @@ preNounAdjectives = ["beau","beaux","belle","belles","bel","laid","laids","laide
 "joli","jolie","jolis","jolies","jeune","jeunes","vieux","vieil","noubel","nouvelle",
 "nouvelles","bon","bonne","bons","bonnes","mauvais","mauvaise","mauvaises","grand",
 "grands","grande","grandes","petit","petits","petite","petites","gros","grosse","grosses"]
-articles = ["a","the","an",]
-sentence1 = "this part of the contribution of and this contribution must be in consistency with the reaction international coordinate"
-sentence2 = "Mr. the president thank you many of your comprehension"
-adjSentence = "The cat fourth is sleeping"
 titles = ["Mr.","Mrs.","Miss", "President"]
 
 
@@ -41,7 +37,6 @@ unigramLM = NgramModel(1, brown.words(categories='news'), True,False,estimator)
 def POStag (sentence):
 	postagged = nltk.pos_tag(sentence.split(" "))
 	return postagged
-
 
 
 
@@ -140,18 +135,6 @@ def removeArticles(sentence):
 			# if (printStuff):
 				# print " REMOVE ARTICLE:  " + sentence[i-1] + sentence[i] + sentence[i+1]
 	return string.join(sentence)
-#print POStag(sentence1)
-#switchAdjectives(adjSentence)
-#this method will actually have to check for verb phrases
-# def deBetweenVerbs(sentence, frenchSentence):
-# 	frenchSentence = frenchSentence.split(" ")
-# 	postagged = POStag(sentence)
-# 	sentence = sentence.split(" ")
-# 	for i in range(0, len(sentence) - 3):
-# 		if (postagged[i][1] in verbTags and frenchSentece[i + 1] == 'de' and postagged[i + 2][1] in verbTags):
-# 			sentence[i + 1] = "to";
-
-# 	return ' '.join(sentence)
 
 
 #this method will actually have to check for verb phrases
@@ -181,8 +164,6 @@ def remove_double_negative(french_sentence):
   'not', changing te meaning of the sentence in direct translation.
   This function remove the 'NE' or 'n' to prevent this.
   """
-  # TODO: Substantially messes up with 'envisagerait', because it's tranlation is two words.
-  # we should get 'would not consider'; we instead get 'would consider not'
   tokens = TranslateUtils.get_list_of_words(french_sentence)
   result_tokens = []
   for i in xrange(len(tokens)):
@@ -204,7 +185,6 @@ def make_plural_nouns(english_sentence):
   make_plural = False
   for token, tag in tokens_tags:
     if make_plural and tag in nounTags and not _is_plural_token(token):
-      #TODO: find more sophisticated pluralizing algorithm
       token = _get_plural(token)
       make_plural = False
     elif _is_plural_token(token):
